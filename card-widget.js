@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────
 // Miles Beyond Borders — Card Widget
-// v1.1
+// v1.2
 //
 // HOW TO USE:
 //   1. Replace SHEET_URL below with your deployed Apps Script URL.
@@ -34,7 +34,6 @@
         display: flex;
         flex-direction: row;
         max-width: 780px;
-        min-height: 0;
       }
 
       /* ── Left panel ── */
@@ -44,10 +43,10 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 28px 24px;
+        padding: 24px 20px;
         flex-shrink: 0;
-        width: 210px;
-        gap: 14px;
+        width: 200px;
+        gap: 12px;
       }
 
       .mbb-offer-status {
@@ -79,7 +78,7 @@
       }
 
       .mbb-left img {
-        width: 162px;
+        width: 158px;
         border-radius: 9px;
         box-shadow: 0 8px 24px rgba(0,0,0,0.35);
         display: block;
@@ -93,34 +92,31 @@
         min-width: 0;
       }
 
+      /* Card name + program */
       .mbb-right-top {
-        padding: 20px 22px 14px;
+        padding: 18px 20px 14px;
         border-bottom: 1px solid #f0f4f7;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
       }
-
       .mbb-card-name {
-        font-size: 17px;
+        font-size: 16px;
         font-weight: 800;
         color: var(--mbb-navy);
         line-height: 1.2;
         margin-bottom: 2px;
       }
       .mbb-card-program {
-        font-size: 12px;
+        font-size: 11.5px;
         color: #8aa8c0;
       }
 
-      /* Offer + earnings row */
-      .mbb-right-mid {
-        display: flex;
-        gap: 0;
-        border-bottom: 1px solid #f0f4f7;
-      }
-
+      /* Offer block */
       .mbb-offer-block {
-        padding: 14px 22px;
-        border-right: 1px solid #f0f4f7;
-        flex-shrink: 0;
+        padding: 14px 20px;
+        border-bottom: 1px solid #f0f4f7;
       }
       .mbb-row-label {
         font-size: 9px;
@@ -128,10 +124,10 @@
         letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--mbb-blue-mid);
-        margin-bottom: 4px;
+        margin-bottom: 3px;
       }
       .mbb-offer-number {
-        font-size: 32px;
+        font-size: 30px;
         font-weight: 900;
         color: var(--mbb-navy);
         line-height: 1;
@@ -146,35 +142,13 @@
       .mbb-offer-detail {
         font-size: 11px;
         color: #7a9ab5;
-        margin-top: 3px;
-      }
-
-      .mbb-earnings-block {
-        padding: 14px 22px;
-        flex: 1;
-      }
-      .mbb-chips { display: flex; flex-wrap: wrap; gap: 5px; }
-      .mbb-chip {
-        display: inline-flex;
-        align-items: baseline;
-        gap: 3px;
-        background: var(--mbb-cream);
-        border: 1px solid #e8e0d0;
-        border-radius: 6px;
-        padding: 3px 8px;
-        font-size: 11.5px;
-        color: var(--mbb-navy);
-      }
-      .mbb-chip b {
-        font-size: 12.5px;
-        font-weight: 800;
-        color: var(--mbb-blue-mid);
+        margin-top: 2px;
       }
 
       /* Verdict */
       .mbb-verdict {
-        margin: 14px 22px;
-        padding: 12px 14px;
+        margin: 12px 20px;
+        padding: 11px 13px;
         background: var(--mbb-navy);
         border-radius: 10px;
         position: relative;
@@ -182,8 +156,8 @@
       .mbb-verdict::before {
         content: "\\201C";
         position: absolute;
-        top: -8px; left: 12px;
-        font-size: 40px;
+        top: -8px; left: 10px;
+        font-size: 38px;
         font-weight: 900;
         color: var(--mbb-blue);
         line-height: 1;
@@ -194,13 +168,79 @@
         letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--mbb-blue);
-        margin-bottom: 4px;
-        padding-top: 8px;
+        margin-bottom: 3px;
+        padding-top: 7px;
       }
       .mbb-verdict-text {
-        font-size: 12.5px;
+        font-size: 12px;
         color: rgba(255,255,255,0.88);
         line-height: 1.55;
+      }
+
+      /* ── Expandable highlights ── */
+      .mbb-highlights {
+        border-top: 1px solid #f0f4f7;
+        margin-top: auto;
+      }
+
+      .mbb-highlights-toggle {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 20px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        gap: 8px;
+      }
+      .mbb-highlights-toggle:hover { background: #f8fbff; }
+
+      .mbb-highlights-toggle-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--mbb-blue-mid);
+      }
+
+      .mbb-highlights-arrow {
+        width: 16px; height: 16px;
+        color: var(--mbb-blue-mid);
+        flex-shrink: 0;
+        transition: transform 0.2s ease;
+      }
+      .mbb-highlights.open .mbb-highlights-arrow {
+        transform: rotate(180deg);
+      }
+
+      .mbb-highlights-body {
+        display: none;
+        padding: 4px 20px 14px;
+      }
+      .mbb-highlights.open .mbb-highlights-body {
+        display: block;
+      }
+
+      .mbb-highlight-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 12.5px;
+        color: var(--mbb-navy);
+        padding: 5px 0;
+        border-bottom: 1px solid #f4f7fa;
+        line-height: 1.4;
+      }
+      .mbb-highlight-item:last-child { border-bottom: none; }
+      .mbb-highlight-item::before {
+        content: '';
+        width: 5px; height: 5px;
+        border-radius: 50%;
+        background: var(--mbb-blue);
+        flex-shrink: 0;
+        margin-top: 5px;
       }
 
       /* Footer */
@@ -208,9 +248,9 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 22px 18px;
+        padding: 10px 20px 16px;
         gap: 12px;
-        margin-top: auto;
+        border-top: 1px solid #f0f4f7;
       }
       .mbb-fee-label {
         font-size: 9px;
@@ -221,7 +261,7 @@
         margin-bottom: 1px;
       }
       .mbb-fee-amount {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 800;
         color: var(--mbb-navy);
       }
@@ -237,9 +277,9 @@
         gap: 7px;
         background: var(--mbb-blue);
         color: #fff !important;
-        font-size: 13px;
+        font-size: 12.5px;
         font-weight: 700;
-        padding: 10px 20px;
+        padding: 9px 18px;
         border-radius: 8px;
         text-decoration: none !important;
         letter-spacing: 0.01em;
@@ -251,19 +291,17 @@
         transform: translateY(-1px);
       }
 
-      /* ── Mobile: stack vertically ── */
+      /* ── Mobile ── */
       @media (max-width: 560px) {
         [data-mbb-card] { flex-direction: column; }
         .mbb-left {
           width: 100%;
           flex-direction: row;
           justify-content: flex-start;
-          padding: 18px 18px 14px;
-          gap: 16px;
+          padding: 16px 18px;
+          gap: 14px;
         }
-        .mbb-left img { width: 120px; }
-        .mbb-right-mid { flex-direction: column; }
-        .mbb-offer-block { border-right: none; border-bottom: 1px solid #f0f4f7; }
+        .mbb-left img { width: 110px; }
         .mbb-footer { flex-direction: column; align-items: stretch; }
         .mbb-learn-more { justify-content: center; }
       }
@@ -298,16 +336,17 @@
     const feeRaw = (card.annual_fee || '').trim();
     const fee    = feeRaw && !feeRaw.startsWith('$') ? '$' + feeRaw : feeRaw;
 
-    const earningsHTML = (card.earnings_summary || '').split('|').map(function(e) {
-      const part  = e.trim();
-      const match = part.match(/^(\d+x)\s+(.+)$/i);
-      return match
-        ? '<span class="mbb-chip"><b>' + match[1] + '</b> ' + match[2] + '</span>'
-        : (part ? '<span class="mbb-chip">' + part + '</span>' : '');
-    }).join('');
+    // Highlighted features — pipe separated
+    const highlightItems = (card.highlighted_features || '')
+      .split('|')
+      .map(function(f) { return f.trim(); })
+      .filter(function(f) { return f.length > 0; })
+      .map(function(f) { return '<div class="mbb-highlight-item">' + f + '</div>'; })
+      .join('');
 
     const imageUrl = resolveImageUrl(card.card_image_url);
-    const arrowSVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    const arrowSVG = '<svg class="mbb-highlights-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+    const ctaArrow = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
 
     return `
       <div class="mbb-left">
@@ -319,21 +358,16 @@
 
       <div class="mbb-right">
         <div class="mbb-right-top">
-          <div class="mbb-card-name">${card.card_name}</div>
-          <div class="mbb-card-program">${card.points_program || ''}</div>
+          <div>
+            <div class="mbb-card-name">${card.card_name}</div>
+            <div class="mbb-card-program">${card.points_program || ''}</div>
+          </div>
         </div>
 
-        <div class="mbb-right-mid">
-          <div class="mbb-offer-block">
-            <div class="mbb-row-label">Welcome Offer</div>
-            <div class="mbb-offer-number">${offerNumber} <span>${offerUnit}</span></div>
-            ${offerDetail ? '<div class="mbb-offer-detail">' + offerDetail + '</div>' : ''}
-          </div>
-          ${earningsHTML ? `
-          <div class="mbb-earnings-block">
-            <div class="mbb-row-label">Earnings Rate</div>
-            <div class="mbb-chips">${earningsHTML}</div>
-          </div>` : ''}
+        <div class="mbb-offer-block">
+          <div class="mbb-row-label">Welcome Offer</div>
+          <div class="mbb-offer-number">${offerNumber} <span>${offerUnit}</span></div>
+          ${offerDetail ? '<div class="mbb-offer-detail">' + offerDetail + '</div>' : ''}
         </div>
 
         ${card.advait_quick_take ? `
@@ -342,17 +376,35 @@
           <div class="mbb-verdict-text">${card.advait_quick_take}</div>
         </div>` : ''}
 
+        ${highlightItems ? `
+        <div class="mbb-highlights">
+          <button class="mbb-highlights-toggle" aria-expanded="false">
+            <span class="mbb-highlights-toggle-label">Card Highlights</span>
+            ${arrowSVG}
+          </button>
+          <div class="mbb-highlights-body">${highlightItems}</div>
+        </div>` : ''}
+
         <div class="mbb-footer">
-          <div class="mbb-fee-wrap">
+          <div>
             <div class="mbb-fee-label">Annual Fee</div>
             <div class="mbb-fee-amount">${fee || 'See offer'} <sub>/yr</sub></div>
           </div>
           <a class="mbb-learn-more" href="${card.affiliate_link || '#'}" target="_blank" rel="noopener sponsored">
-            Learn More ${arrowSVG}
+            Learn More ${ctaArrow}
           </a>
         </div>
       </div>
     `;
+  }
+
+  // ── Toggle handler (delegated) ─────────────────────────────
+  function handleToggle(e) {
+    const btn = e.target.closest('.mbb-highlights-toggle');
+    if (!btn) return;
+    const section = btn.closest('.mbb-highlights');
+    const isOpen  = section.classList.toggle('open');
+    btn.setAttribute('aria-expanded', isOpen);
   }
 
   // ── Render all card placeholders on the page ───────────────
@@ -366,6 +418,7 @@
       }
       el.innerHTML = buildCardHTML(card);
     });
+    document.addEventListener('click', handleToggle);
   }
 
   // ── Entry point ────────────────────────────────────────────
@@ -393,3 +446,4 @@
   }
 
 })();
+
