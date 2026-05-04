@@ -146,8 +146,15 @@
       }
 
       /* Verdict */
-      .mbb-verdict {
+      .mbb-verdict-wrap {
         margin: 12px 20px;
+      }
+
+      /* Desktop: toggle button hidden, body always visible */
+      .mbb-verdict-toggle { display: none; }
+      .mbb-verdict-body   { display: block; }
+
+      .mbb-verdict {
         padding: 11px 13px;
         background: var(--mbb-navy);
         border-radius: 10px;
@@ -304,6 +311,41 @@
         .mbb-left img { width: 110px; }
         .mbb-footer { flex-direction: column; align-items: stretch; }
         .mbb-learn-more { justify-content: center; }
+
+        /* Verdict becomes a toggle on mobile */
+        .mbb-verdict-wrap { margin: 0; border-top: 1px solid #f0f4f7; }
+        .mbb-verdict-toggle {
+          display: flex;
+          width: 100%;
+          align-items: center;
+          justify-content: space-between;
+          padding: 10px 18px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-family: inherit;
+          gap: 8px;
+        }
+        .mbb-verdict-toggle:hover { background: #f8fbff; }
+        .mbb-verdict-toggle-label {
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--mbb-blue-mid);
+        }
+        .mbb-verdict-arrow {
+          width: 16px; height: 16px;
+          color: var(--mbb-blue-mid);
+          flex-shrink: 0;
+          transition: transform 0.2s ease;
+        }
+        .mbb-verdict-wrap.open .mbb-verdict-arrow { transform: rotate(180deg); }
+
+        /* Body hidden by default on mobile, shown when open */
+        .mbb-verdict-body { display: none; padding: 0 18px 14px; }
+        .mbb-verdict-wrap.open .mbb-verdict-body { display: block; }
+        .mbb-verdict { margin: 0; }
       }
     `;
     const style = document.createElement('style');
@@ -371,9 +413,17 @@
         </div>
 
         ${card.advait_quick_take ? `
-        <div class="mbb-verdict">
-          <div class="mbb-verdict-label">Advait's Verdict</div>
-          <div class="mbb-verdict-text">${card.advait_quick_take}</div>
+        <div class="mbb-verdict-wrap">
+          <button class="mbb-verdict-toggle" aria-expanded="false">
+            <span class="mbb-verdict-toggle-label">Advait's Verdict</span>
+            <svg class="mbb-verdict-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="mbb-verdict-body">
+            <div class="mbb-verdict">
+              <div class="mbb-verdict-label">Advait's Verdict</div>
+              <div class="mbb-verdict-text">${card.advait_quick_take}</div>
+            </div>
+          </div>
         </div>` : ''}
 
         ${highlightItems ? `
@@ -400,9 +450,9 @@
 
   // ── Toggle handler (delegated) ─────────────────────────────
   function handleToggle(e) {
-    const btn = e.target.closest('.mbb-highlights-toggle');
+    const btn = e.target.closest('.mbb-highlights-toggle, .mbb-verdict-toggle');
     if (!btn) return;
-    const section = btn.closest('.mbb-highlights');
+    const section = btn.closest('.mbb-highlights, .mbb-verdict-wrap');
     const isOpen  = section.classList.toggle('open');
     btn.setAttribute('aria-expanded', isOpen);
   }
