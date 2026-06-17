@@ -3,12 +3,48 @@
    Mobile-optimized card page for Showit.
    Embed in Showit with:
    <div id="mbb-cards"></div>
-   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=3"></script>
+   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=5"></script>
    ============================================================ */
 (function () {
   "use strict";
 
-  var VERSION = "3";
+  function firstNonEmpty() {
+    for (var i = 0; i < arguments.length; i++) {
+      var value = arguments[i];
+      if (value !== undefined && value !== null && String(value).trim() !== "") {
+        return String(value).trim();
+      }
+    }
+    return "";
+  }
+
+  function getOfferUrl(card) {
+    return firstNonEmpty(
+      card.offer_url,
+      card.affiliate_url,
+      card.affiliate_link,
+      card.apply_link,
+      card.apply_url,
+      card.button_url,
+      card.link,
+      card.url,
+      card.referral_link,
+      card.partner_link,
+      card.card_link
+    );
+  }
+
+  function getReviewUrl(card) {
+    return firstNonEmpty(
+      card.review_url,
+      card.full_review_url,
+      card.review_link,
+      card.full_review_link
+    );
+  }
+
+
+  var VERSION = "5";
   var DATA_URL = "https://advaitmbb.github.io/card-widget/cards.json?v=" + VERSION;
 
   var LINK_PILLS = {
@@ -244,8 +280,10 @@
     var lt = LINK_PILLS[lc(c.link_type)];
     var ltypeHTML = lt ? '<div class="mbbc-ltype '+lt.cls+'">'+lt.label+'</div>' : "";
     var relAttr = (lt && lt.cls === "pub") ? "nofollow noopener" : "sponsored nofollow noopener";
-    var review = c.review_url ? '<a class="mbbc-review" href="'+esc(c.review_url)+'">Full review</a>' : "";
-    var offer = c.offer_url ? '<a class="mbbc-cta" href="'+esc(c.offer_url)+'" target="_blank" rel="'+relAttr+'">View offer →</a>' : '<span class="mbbc-cta" aria-disabled="true">Offer unavailable</span>';
+    var offerUrl = getOfferUrl(c);
+    var reviewUrl = getReviewUrl(c);
+    var review = reviewUrl ? '<a class="mbbc-review" href="'+esc(reviewUrl)+'">Full review</a>' : "";
+    var offer = offerUrl ? '<a class="mbbc-cta" href="'+esc(offerUrl)+'" target="_blank" rel="'+relAttr+'">View offer →</a>' : '<span class="mbbc-cta" aria-disabled="true">Offer unavailable</span>';
 
     return '<article class="mbbc-card">'
       + '<div class="mbbc-top"><div class="mbbc-art">'+art+'</div><div class="mbbc-head">'
@@ -393,3 +431,247 @@
       if(g) g.innerHTML = '<div class="mbbc-state">Couldn’t load cards right now. Please refresh in a moment.</div>';
     });
 })();
+
+
+  (function injectMobileFontPatch() {
+    var patch = document.createElement("style");
+    patch.textContent = `
+/* MBB MOBILE FONT SIZE PATCH V4 */
+
+    @media (max-width: 640px) {
+      #mbb-cards {
+        font-size: 70% !important;
+      }
+
+      #mbb-cards .mbb-shell,
+      #mbb-cards .mbb-card,
+      #mbb-cards .mbb-filters,
+      #mbb-cards .mbb-mobile-filter-panel {
+        font-size: 1em !important;
+      }
+
+      #mbb-cards h1,
+      #mbb-cards h2,
+      #mbb-cards h3,
+      #mbb-cards .mbb-card-title {
+        font-size: 1.35rem !important;
+        line-height: 1.15 !important;
+      }
+
+      #mbb-cards .mbb-offer-value,
+      #mbb-cards .mbb-points,
+      #mbb-cards .mbb-welcome-points {
+        font-size: 1.55rem !important;
+        line-height: 1.05 !important;
+      }
+
+      #mbb-cards .mbb-card-meta,
+      #mbb-cards .mbb-muted,
+      #mbb-cards .mbb-subtext,
+      #mbb-cards .mbb-spend {
+        font-size: 0.95rem !important;
+      }
+
+      #mbb-cards input,
+      #mbb-cards select,
+      #mbb-cards button,
+      #mbb-cards .mbb-btn,
+      #mbb-cards .mbb-chip {
+        font-size: 1rem !important;
+      }
+
+      #mbb-cards .mbb-card {
+        padding: 18px !important;
+      }
+
+      #mbb-cards .mbb-card-top {
+        gap: 14px !important;
+      }
+
+      #mbb-cards .mbb-card-image,
+      #mbb-cards .mbb-card-img {
+        max-width: 116px !important;
+      }
+
+      #mbb-cards .mbb-primary-btn,
+      #mbb-cards .mbb-apply-btn {
+        min-height: 44px !important;
+      }
+    }
+`;
+    document.head.appendChild(patch);
+  })();
+
+
+  (function injectMobileV5Patch() {
+    var patch = document.createElement("style");
+    patch.textContent = `
+/* MBB MOBILE SIZE + LINK PATCH V5 */
+@media (max-width: 640px) {
+  #mbb-cards {
+    --mobile-scale-note: "v5";
+  }
+
+  #mbb-cards .mbbc-wrap {
+    padding: 14px 8px 28px !important;
+  }
+
+  #mbb-cards .mbbc-tools {
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+  }
+
+  #mbb-cards .mbbc-search {
+    height: 42px !important;
+    font-size: 14px !important;
+    padding: 0 14px 0 40px !important;
+    border-radius: 12px !important;
+  }
+
+  #mbb-cards .mbbc-filter-btn,
+  #mbb-cards .mbbc-icon-btn,
+  #mbb-cards .mbbc-sort,
+  #mbb-cards select {
+    min-height: 38px !important;
+    height: 38px !important;
+    font-size: 13px !important;
+    border-radius: 12px !important;
+  }
+
+  #mbb-cards .mbbc-resultsbar {
+    font-size: 12px !important;
+    margin: 10px 0 12px !important;
+  }
+
+  #mbb-cards .mbbc-chip {
+    font-size: 11px !important;
+    padding: 5px 8px !important;
+  }
+
+  #mbb-cards .mbbc-grid {
+    gap: 14px !important;
+  }
+
+  #mbb-cards .mbbc-card {
+    padding: 14px !important;
+    border-radius: 16px !important;
+  }
+
+  #mbb-cards .mbbc-top {
+    gap: 10px !important;
+    align-items: flex-start !important;
+  }
+
+  #mbb-cards .mbbc-art {
+    flex: 0 0 78px !important;
+    width: 78px !important;
+    height: 50px !important;
+    border-radius: 8px !important;
+  }
+
+  #mbb-cards .mbbc-name {
+    font-size: 15px !important;
+    line-height: 1.17 !important;
+  }
+
+  #mbb-cards .mbbc-fee {
+    font-size: 10.5px !important;
+    line-height: 1.3 !important;
+    margin-top: 3px !important;
+  }
+
+  #mbb-cards .mbbc-badges {
+    margin-bottom: 4px !important;
+  }
+
+  #mbb-cards .mbbc-badge {
+    font-size: 8.5px !important;
+    padding: 3px 7px !important;
+  }
+
+  #mbb-cards .mbbc-offer {
+    margin-top: 11px !important;
+    padding-top: 11px !important;
+  }
+
+  #mbb-cards .mbbc-lab {
+    font-size: 8.5px !important;
+    letter-spacing: .075em !important;
+  }
+
+  #mbb-cards .mbbc-pts {
+    font-size: 17px !important;
+    line-height: 1.1 !important;
+  }
+
+  #mbb-cards .mbbc-req {
+    font-size: 10.5px !important;
+    line-height: 1.25 !important;
+  }
+
+  #mbb-cards .mbbc-value {
+    font-size: 13px !important;
+    padding: 10px 0 !important;
+  }
+
+  #mbb-cards .mbbc-vchip {
+    font-size: 13px !important;
+    margin-left: 4px !important;
+  }
+
+  #mbb-cards .mbbc-acc-sum {
+    padding: 9px 0 !important;
+    font-size: 12px !important;
+  }
+
+  #mbb-cards .mbbc-acc-body {
+    font-size: 11.5px !important;
+    line-height: 1.45 !important;
+    padding-bottom: 10px !important;
+  }
+
+  #mbb-cards .mbbc-foot {
+    padding-top: 11px !important;
+  }
+
+  #mbb-cards .mbbc-ltype {
+    font-size: 9.5px !important;
+    padding: 5px 9px !important;
+    margin-bottom: 9px !important;
+  }
+
+  #mbb-cards .mbbc-cta-row {
+    gap: 9px !important;
+  }
+
+  #mbb-cards .mbbc-cta {
+    min-height: 42px !important;
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+    border-radius: 11px !important;
+  }
+
+  #mbb-cards .mbbc-review {
+    font-size: 12px !important;
+  }
+
+  #mbb-cards .mbbc-drawer {
+    font-size: 13px !important;
+  }
+
+  #mbb-cards .mbbc-drawer h3 {
+    font-size: 16px !important;
+  }
+
+  #mbb-cards .mbbc-drawer label {
+    font-size: 11px !important;
+  }
+
+  #mbb-cards .mbbc-apply {
+    min-height: 42px !important;
+    font-size: 14px !important;
+  }
+}
+`;
+    document.head.appendChild(patch);
+  })();
