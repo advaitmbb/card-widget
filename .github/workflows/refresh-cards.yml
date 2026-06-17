@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: refresh-card-data
+  cancel-in-progress: false
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
@@ -32,5 +36,6 @@ jobs:
             echo "No change — nothing to commit."
           else
             git commit -m "Auto-refresh card data [skip ci]"
+            git pull --rebase origin "${GITHUB_REF_NAME:-main}"
             git push
           fi
