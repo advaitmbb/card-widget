@@ -138,6 +138,29 @@
 "transferable": "no",
 "link_type": "affiliate",
 "review_url": ""
+},
+"cfu": {
+"card_id": "cfu",
+"card_name": "Chase Freedom Unlimited®",
+"card_issuer": "Chase",
+"points_program": "Chase Ultimate Rewards",
+"card_image_url": "https://static.showit.com/file/7EhF3Fma3vnMMUxXR8NEMA/303710/chase_freedom_unlimited_r.png",
+"welcome_offer": "20,000 points",
+"bonus_condition": "$500 spend in first 3 months",
+"welcome_offer_status": "Standard",
+"annual_fee": "$0",
+"earnings_summary": "",
+"highlighted_features": "1.5% On All Spend | 3% On Dining & Drug Stores | No Annual Fee",
+"affiliate_link": "https://milesbeyondborders.com/cfu",
+"advait_quick_take": "The no-annual-fee everyday earner from Chase — simple cash back on its own, but much more powerful when paired with a Sapphire card to turn rewards into transferable travel points.",
+"link": "<div data-mbb-card=\"cfu\"></div>",
+"show_on_card_page": "yes",
+"sort_order": "3",
+"card_type": "Personal",
+"cpp": "1",
+"transferable": "no",
+"link_type": "affiliate",
+"review_url": ""
 }
 }
 }
