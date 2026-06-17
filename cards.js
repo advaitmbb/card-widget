@@ -3,7 +3,7 @@
    Mobile-optimized card page for Showit.
    Embed in Showit with:
    <div id="mbb-cards"></div>
-   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=6"></script>
+   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=7"></script>
    ============================================================ */
 (function () {
   "use strict";
@@ -44,7 +44,7 @@
   }
 
 
-  var VERSION = "6";
+  var VERSION = "7";
   var DATA_URL = "https://advaitmbb.github.io/card-widget/cards.json?v=" + VERSION;
 
   var LINK_PILLS = {
@@ -338,6 +338,64 @@
   body.mbbc-lock{overflow:hidden}
 }
 
+
+
+/* Smooth accordion animation v7 */
+#mbb-cards .mbbc-acc {
+  overflow: hidden;
+}
+
+#mbb-cards .mbbc-acc .mbbc-acc-body {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-4px);
+  padding-top: 0;
+  padding-bottom: 0;
+  transition:
+    max-height 280ms ease,
+    opacity 220ms ease,
+    transform 220ms ease,
+    padding-bottom 220ms ease;
+  will-change: max-height, opacity, transform;
+}
+
+#mbb-cards .mbbc-acc.is-open .mbbc-acc-body {
+  opacity: 1;
+  transform: translateY(0);
+  padding-bottom: 13px;
+}
+
+#mbb-cards .mbbc-acc.is-closing .mbbc-acc-body {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+#mbb-cards .mbbc-acc .mbbc-acc-sum {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 680px) {
+  #mbb-cards .mbbc-acc.is-open .mbbc-acc-body {
+    padding-bottom: 10px;
+  }
+
+  #mbb-cards .mbbc-acc .mbbc-acc-body {
+    transition:
+      max-height 240ms ease,
+      opacity 190ms ease,
+      transform 190ms ease,
+      padding-bottom 190ms ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #mbb-cards .mbbc-acc .mbbc-acc-body {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
 `;
 
   var st = document.createElement("style");
@@ -511,6 +569,7 @@
     el.sortMobile.value = el.sort.value;
     el.count.textContent = list.length;
     el.grid.innerHTML = list.length ? list.map(cardHTML).join("") : '<div class="mbbc-empty"><b>No cards match those filters</b>Try widening the fee range or clearing your search.</div>';
+    initAccordions();
     renderChips();
   }
 
@@ -518,6 +577,69 @@
     var seen = {};
     CARDS.forEach(function(c){ if(c.card_issuer) seen[c.card_issuer] = true; });
     Object.keys(seen).sort().forEach(function(n){ var o=document.createElement("option"); o.value=n; o.textContent=n; el.issuer.appendChild(o); });
+  }
+
+
+  function initAccordions() {
+    var detailsList = Array.prototype.slice.call(mount.querySelectorAll(".mbbc-acc"));
+    detailsList.forEach(function(details) {
+      if (details.dataset.smoothReady === "yes") return;
+      details.dataset.smoothReady = "yes";
+
+      var summary = details.querySelector(".mbbc-acc-sum");
+      var body = details.querySelector(".mbbc-acc-body");
+      if (!summary || !body) return;
+
+      if (details.open) {
+        details.classList.add("is-open");
+        body.style.maxHeight = body.scrollHeight + "px";
+      } else {
+        details.classList.remove("is-open");
+        body.style.maxHeight = "0px";
+      }
+
+      summary.addEventListener("click", function(event) {
+        event.preventDefault();
+
+        var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var isOpen = details.open;
+
+        if (reduceMotion) {
+          details.open = !isOpen;
+          details.classList.toggle("is-open", !isOpen);
+          body.style.maxHeight = !isOpen ? "none" : "0px";
+          return;
+        }
+
+        if (isOpen) {
+          details.classList.remove("is-open");
+          details.classList.add("is-closing");
+          body.style.maxHeight = body.scrollHeight + "px";
+
+          requestAnimationFrame(function() {
+            body.style.maxHeight = "0px";
+          });
+
+          window.setTimeout(function() {
+            details.open = false;
+            details.classList.remove("is-closing");
+          }, 285);
+        } else {
+          details.open = true;
+          details.classList.remove("is-closing");
+          details.classList.add("is-open");
+          body.style.maxHeight = "0px";
+
+          requestAnimationFrame(function() {
+            body.style.maxHeight = body.scrollHeight + "px";
+          });
+
+          window.setTimeout(function() {
+            if (details.open) body.style.maxHeight = "none";
+          }, 285);
+        }
+      });
+    });
   }
 
   function syncFilterPlacement(){
