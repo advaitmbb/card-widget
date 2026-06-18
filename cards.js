@@ -2,7 +2,7 @@
    Miles Beyond Borders — Card Page Widget
    Showit embed:
    <div id="mbb-cards"></div>
-   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=9"></script>
+   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=10"></script>
 
    v8:
    - Mobile-first card layout
@@ -14,7 +14,7 @@
 (function () {
   "use strict";
 
-  var VERSION = "9";
+  var VERSION = "10";
   var DATA_URL = "https://advaitmbb.github.io/card-widget/cards.json?v=" + VERSION;
 
   var LINK_PILLS = {
@@ -517,6 +517,134 @@
   }
 }
 
+
+
+/* v10 compact mobile filter sheet
+   - Smaller mobile filter typography
+   - Two-column filter layout
+   - Shorter pill-style controls
+   - Better internal scrolling
+   - Desktop unchanged
+*/
+@media(max-width:680px){
+  #mbb-cards .mbbc-panel{
+    padding:calc(10px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom)) !important;
+  }
+
+  #mbb-cards .mbbc-panel-head{
+    margin:0 0 8px !important;
+    padding:0 0 8px !important;
+  }
+
+  #mbb-cards .mbbc-panel-title{
+    font-size:13px !important;
+    line-height:1.1 !important;
+    letter-spacing:.01em !important;
+  }
+
+  #mbb-cards .mbbc-close{
+    width:30px !important;
+    height:30px !important;
+    font-size:18px !important;
+  }
+
+  #mbb-cards .mbbc-panel-body{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    overflow-y:auto !important;
+    overscroll-behavior:contain !important;
+    -webkit-overflow-scrolling:touch !important;
+    display:grid !important;
+    grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+    gap:8px !important;
+    padding:0 0 10px !important;
+  }
+
+  #mbb-cards .mbbc-panel .mbbc-row2,
+  #mbb-cards .mbbc-panel .mbbc-row3{
+    display:contents !important;
+  }
+
+  #mbb-cards .mbbc-panel #mbbc-sort,
+  #mbb-cards .mbbc-panel #mbbc-spend{
+    grid-column:1 / -1 !important;
+  }
+
+  #mbb-cards .mbbc-panel select{
+    width:100% !important;
+    min-width:0 !important;
+    min-height:36px !important;
+    height:36px !important;
+    padding:7px 28px 7px 10px !important;
+    border-radius:999px !important;
+    font-size:10.5px !important;
+    line-height:1 !important;
+    font-weight:800 !important;
+    background-position:calc(100% - 15px) 16px,calc(100% - 10px) 16px !important;
+    background-size:5px 5px,5px 5px !important;
+  }
+
+  #mbb-cards .mbbc-panel .mbbc-toggle{
+    width:100% !important;
+    min-height:36px !important;
+    height:auto !important;
+    padding:7px 9px !important;
+    border-radius:999px !important;
+    font-size:10.5px !important;
+    line-height:1.15 !important;
+    font-weight:850 !important;
+    gap:7px !important;
+    background:#FBFAF7 !important;
+  }
+
+  #mbb-cards .mbbc-panel .mbbc-toggle input{
+    width:14px !important;
+    height:14px !important;
+    flex:0 0 auto !important;
+  }
+
+  #mbb-cards .mbbc-apply{
+    min-height:38px !important;
+    margin:8px 0 0 !important;
+    border-radius:999px !important;
+    font-size:12px !important;
+    line-height:1 !important;
+  }
+
+  #mbb-cards .mbbc-panel select,
+  #mbb-cards .mbbc-panel .mbbc-toggle,
+  #mbb-cards .mbbc-apply{
+    box-shadow:0 1px 4px rgba(23,40,58,.04) !important;
+  }
+}
+
+@media(max-width:360px){
+  #mbb-cards .mbbc-panel-body{
+    gap:7px !important;
+  }
+
+  #mbb-cards .mbbc-panel select,
+  #mbb-cards .mbbc-panel .mbbc-toggle{
+    font-size:10px !important;
+    min-height:34px !important;
+  }
+}
+
+
+
+/* v10 iOS scroll safety */
+@media(max-width:680px){
+  body.mbbc-lock{
+    overflow:hidden !important;
+    touch-action:auto !important;
+  }
+
+  #mbb-cards.mbbc-panel-open .mbbc-panel,
+  #mbb-cards.mbbc-panel-open .mbbc-panel-body{
+    touch-action:pan-y !important;
+  }
+}
+
 `;
 
   var st = document.createElement("style");
@@ -943,6 +1071,7 @@
     syncFilterPlacement();
     mount.classList.add("mbbc-panel-open");
     document.body.classList.add("mbbc-lock");
+    document.body.style.overflow = "hidden";
     if (el.panelBody) el.panelBody.scrollTop = 0;
     if (el.panel) {
       el.panel.scrollTop = 0;
@@ -953,6 +1082,7 @@
   function closePanel(){
     mount.classList.remove("mbbc-panel-open");
     document.body.classList.remove("mbbc-lock");
+    document.body.style.overflow = "";
     if (el.panel) el.panel.setAttribute("aria-hidden", "true");
   }
 
