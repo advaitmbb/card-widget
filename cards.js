@@ -2,7 +2,7 @@
    Miles Beyond Borders — Card Page Widget
    Showit embed:
    <div id="mbb-cards"></div>
-   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=8"></script>
+   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=9"></script>
 
    v8:
    - Mobile-first card layout
@@ -14,7 +14,7 @@
 (function () {
   "use strict";
 
-  var VERSION = "8";
+  var VERSION = "9";
   var DATA_URL = "https://advaitmbb.github.io/card-widget/cards.json?v=" + VERSION;
 
   var LINK_PILLS = {
@@ -389,6 +389,134 @@
     transform:none !important;
   }
 }
+
+
+/* v9 mobile filter overlay bug fix
+   - Removes cropped ghost panel near the top of the page
+   - Makes filter panel scrollable on mobile
+   - Keeps desktop unchanged
+*/
+@media(max-width:680px){
+  #mbb-cards .mbbc-panel-backdrop{
+    display:none;
+    position:fixed !important;
+    inset:0 !important;
+    background:rgba(20,34,47,.48) !important;
+    backdrop-filter:blur(2px) !important;
+    z-index:2147483646 !important;
+  }
+
+  #mbb-cards .mbbc-panel{
+    display:flex !important;
+    flex-direction:column !important;
+    position:fixed !important;
+    top:0 !important;
+    left:0 !important;
+    right:0 !important;
+    bottom:0 !important;
+    width:100vw !important;
+    height:100dvh !important;
+    max-height:100dvh !important;
+    margin:0 !important;
+    padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom)) !important;
+    background:#fff !important;
+    border:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    z-index:2147483647 !important;
+    transform:translateY(-105%) !important;
+    transition:transform .22s ease !important;
+    overflow:hidden !important;
+    visibility:hidden !important;
+    pointer-events:none !important;
+  }
+
+  #mbb-cards.mbbc-panel-open .mbbc-panel{
+    transform:translateY(0) !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+  }
+
+  #mbb-cards.mbbc-panel-open .mbbc-panel-backdrop{
+    display:block !important;
+  }
+
+  #mbb-cards .mbbc-panel-head{
+    flex:0 0 auto !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    margin:0 0 12px !important;
+    padding:0 0 12px !important;
+    border-bottom:1px solid var(--line) !important;
+    background:#fff !important;
+    position:relative !important;
+    top:auto !important;
+    z-index:2 !important;
+  }
+
+  #mbb-cards .mbbc-panel-title{
+    font-size:16px !important;
+    font-weight:900 !important;
+  }
+
+  #mbb-cards .mbbc-close{
+    width:36px !important;
+    height:36px !important;
+    border-radius:999px !important;
+    background:#F3F0EA !important;
+  }
+
+  #mbb-cards .mbbc-panel-body{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    display:flex !important;
+    flex-direction:column !important;
+    gap:10px !important;
+    padding:0 0 14px !important;
+  }
+
+  #mbb-cards .mbbc-panel .mbbc-row2,
+  #mbb-cards .mbbc-panel .mbbc-row3{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:10px !important;
+    margin:0 !important;
+  }
+
+  #mbb-cards .mbbc-panel select,
+  #mbb-cards .mbbc-panel .mbbc-toggle{
+    width:100% !important;
+    min-height:44px !important;
+    font-size:13px !important;
+    border-radius:14px !important;
+    background-color:#FBFAF7 !important;
+    box-shadow:none !important;
+  }
+
+  #mbb-cards .mbbc-apply{
+    flex:0 0 auto !important;
+    position:relative !important;
+    bottom:auto !important;
+    margin:12px 0 0 !important;
+    min-height:46px !important;
+    border-radius:14px !important;
+  }
+
+  body.mbbc-lock{
+    overflow:hidden !important;
+    touch-action:none !important;
+  }
+
+  body.mbbc-lock #mbb-cards .mbbc-panel,
+  body.mbbc-lock #mbb-cards .mbbc-panel-body{
+    touch-action:auto !important;
+  }
+}
+
 `;
 
   var st = document.createElement("style");
@@ -815,13 +943,17 @@
     syncFilterPlacement();
     mount.classList.add("mbbc-panel-open");
     document.body.classList.add("mbbc-lock");
-    el.panel.setAttribute("aria-hidden", "false");
+    if (el.panelBody) el.panelBody.scrollTop = 0;
+    if (el.panel) {
+      el.panel.scrollTop = 0;
+      el.panel.setAttribute("aria-hidden", "false");
+    }
   }
 
   function closePanel(){
     mount.classList.remove("mbbc-panel-open");
     document.body.classList.remove("mbbc-lock");
-    el.panel.setAttribute("aria-hidden", "true");
+    if (el.panel) el.panel.setAttribute("aria-hidden", "true");
   }
 
   function syncFilterPlacement(){
@@ -895,6 +1027,13 @@
     mount.querySelector("#mbbc-close-filters").addEventListener("click", closePanel);
     mount.querySelector("#mbbc-filter-backdrop").addEventListener("click", closePanel);
     mount.querySelector("#mbbc-apply-filters").addEventListener("click", closePanel);
+
+    if (el.panel) {
+      el.panel.addEventListener("touchmove", function(e){
+        if (!mount.classList.contains("mbbc-panel-open")) return;
+        e.stopPropagation();
+      }, { passive:true });
+    }
 
     document.addEventListener("keydown", function(e){
       if (e.key === "Escape") closePanel();
