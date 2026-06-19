@@ -2,7 +2,7 @@
    Miles Beyond Borders — Card Page Widget
    Showit embed:
    <div id="mbb-cards"></div>
-   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=11"></script>
+   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=12"></script>
 
    v8:
    - Mobile-first card layout
@@ -14,7 +14,7 @@
 (function () {
   "use strict";
 
-  var VERSION = "11";
+  var VERSION = "12";
   var DATA_URL = "https://advaitmbb.github.io/card-widget/cards.json?v=" + VERSION;
 
   var LINK_PILLS = {
@@ -772,6 +772,85 @@
   #mbb-cards .mbbc-apply{
     min-height:36px !important;
     height:36px !important;
+  }
+}
+
+
+
+/* v12 mobile filter width fix
+   Prevents the filter overlay from being cropped on the right.
+   Desktop unchanged.
+*/
+@media(max-width:680px){
+  #mbb-cards .mbbc-panel{
+    left:8px !important;
+    right:8px !important;
+    top:8px !important;
+    bottom:8px !important;
+    width:auto !important;
+    max-width:none !important;
+    height:calc(100dvh - 16px) !important;
+    max-height:calc(100dvh - 16px) !important;
+    margin:0 !important;
+    box-sizing:border-box !important;
+    border-radius:18px !important;
+    padding:calc(8px + env(safe-area-inset-top)) 8px calc(8px + env(safe-area-inset-bottom)) !important;
+  }
+
+  #mbb-cards .mbbc-panel,
+  #mbb-cards .mbbc-panel *{
+    max-width:100% !important;
+    box-sizing:border-box !important;
+  }
+
+  #mbb-cards .mbbc-panel-body{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    width:100% !important;
+    max-width:100% !important;
+    column-gap:5px !important;
+    row-gap:5px !important;
+    padding-left:0 !important;
+    padding-right:0 !important;
+  }
+
+  #mbb-cards .mbbc-panel select,
+  #mbb-cards .mbbc-panel .mbbc-toggle{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+  }
+
+  #mbb-cards .mbbc-panel select{
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+
+  #mbb-cards .mbbc-panel .mbbc-toggle{
+    justify-content:flex-start !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+
+  #mbb-cards .mbbc-apply{
+    width:100% !important;
+    max-width:100% !important;
+  }
+}
+
+@media(max-width:360px){
+  #mbb-cards .mbbc-panel{
+    left:6px !important;
+    right:6px !important;
+    width:auto !important;
+    height:calc(100dvh - 12px) !important;
+    max-height:calc(100dvh - 12px) !important;
+    padding-left:6px !important;
+    padding-right:6px !important;
+  }
+
+  #mbb-cards .mbbc-panel-body{
+    column-gap:4px !important;
   }
 }
 
