@@ -2,7 +2,7 @@
    Miles Beyond Borders — Card Page Widget
    Showit embed:
    <div id="mbb-cards"></div>
-   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=14"></script>
+   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=15"></script>
 
    v8:
    - Mobile-first card layout
@@ -14,7 +14,7 @@
 (function () {
   "use strict";
 
-  var VERSION = "14";
+  var VERSION = "15";
   var DATA_URL = "https://advaitmbb.github.io/card-widget/cards.json?v=" + VERSION;
 
   var LINK_PILLS = {
@@ -1261,10 +1261,10 @@
           </select>
           <select id="mbbc-wo" aria-label="Welcome offer">
             <option value="">Welcome offer: any</option>
-            <option value="50000">50,000+ points</option>
-            <option value="75000">75,000+ points</option>
-            <option value="100000">100,000+ points</option>
-            <option value="150000">150,000+ points</option>
+            <option value="50000">50k+ points / $500+</option>
+            <option value="75000">75k+ points / $750+</option>
+            <option value="100000">100k+ points / $1k+</option>
+            <option value="150000">150k+ points / $1.5k+</option>
           </select>
           <select id="mbbc-spend" aria-label="Spend requirement">
             <option value="">Spend requirement: any</option>
@@ -1329,6 +1329,42 @@
   function num(s){
     var m = String(s == null ? "" : s).replace(/,/g,"").match(/\d+(\.\d+)?/);
     return m ? parseFloat(m[0]) : null;
+  }
+
+  function isCashOffer(c){
+    var offer = String((c && c.welcome_offer) || "").toLowerCase();
+    return offer.indexOf("$") !== -1 ||
+      offer.indexOf("cash") !== -1 ||
+      offer.indexOf("cashback") !== -1 ||
+      offer.indexOf("statement credit") !== -1 ||
+      (offer.indexOf("bonus") !== -1 && offer.indexOf("point") === -1 && offer.indexOf("mile") === -1);
+  }
+
+  function offerFaceValue(c){
+    var amount = num(c && c.welcome_offer);
+    if (amount == null) return 0;
+    return isCashOffer(c) ? amount : 0;
+  }
+
+  function offerPointsEquivalent(c){
+    var amount = num(c && c.welcome_offer);
+    if (amount == null) return 0;
+    if (isCashOffer(c)) return amount * 100;
+    return amount;
+  }
+
+  function estimatedOfferValue(c){
+    var amount = num(c && c.welcome_offer);
+    if (amount == null) return 0;
+
+    if (isCashOffer(c)) {
+      var cppCash = parseFloat(c.cpp);
+      if (!isNaN(cppCash) && cppCash > 1) return Math.round(amount * cppCash);
+      return Math.round(amount);
+    }
+
+    var cpp = parseFloat(c.cpp);
+    return !isNaN(cpp) ? Math.round(amount * cpp / 100) : 0;
   }
 
   function lc(s){ return String(s == null ? "" : s).trim().toLowerCase(); }
@@ -1414,17 +1450,31 @@
       ? '<img src="' + esc(c.card_image_url) + '" alt="' + esc(c.card_name || "Credit card") + '" loading="lazy">'
       : esc(initials(c.card_name));
 
-    var pts = num(c.welcome_offer);
+    var rawOfferAmount = num(c.welcome_offer);
     var cpp = parseFloat(c.cpp);
     var valueBlock = "";
-    if (pts != null && !isNaN(cpp)) {
-      var val = Math.round(pts * cpp / 100);
-      var vbody = 'What I think the ' + esc(c.welcome_offer || "welcome bonus") + ' is realistically worth, valued at a conservative ' + esc(String(cpp)) + '¢ per point.<br>I value points by what you’ll actually get — not a best-case redemption.';
-      valueBlock =
-        '<details class="mbbc-acc mbbc-acc-value">' +
-          '<summary class="mbbc-acc-sum"><span>My value <span class="mbbc-vchip">≈ ' + esc(money(val)) + '</span></span>' + chevron() + '</summary>' +
-          '<div class="mbbc-acc-body">' + vbody + '</div>' +
-        '</details>';
+    if (rawOfferAmount != null) {
+      var val = estimatedOfferValue(c);
+      if (val > 0) {
+        var vbody = "";
+        if (isCashOffer(c)) {
+          if (!isNaN(cpp) && cpp > 1) {
+            vbody = 'This offer is displayed as cash back because that is how the issuer markets it. For cards where cash back can become transferable points, I estimate the value using a point-equivalent conversion at ' + esc(String(cpp)) + '¢ per point.';
+          } else {
+            vbody = 'This offer is displayed and valued as cash back based on the face value shown in the welcome offer.';
+          }
+        } else if (!isNaN(cpp)) {
+          vbody = 'What I think the ' + esc(c.welcome_offer || "welcome bonus") + ' is realistically worth, valued at a conservative ' + esc(String(cpp)) + '¢ per point.<br>I value points by what you’ll actually get — not a best-case redemption.';
+        }
+
+        if (vbody) {
+          valueBlock =
+            '<details class="mbbc-acc mbbc-acc-value">' +
+              '<summary class="mbbc-acc-sum"><span>My value <span class="mbbc-vchip">≈ ' + esc(money(val)) + '</span></span>' + chevron() + '</summary>' +
+              '<div class="mbbc-acc-body">' + vbody + '</div>' +
+            '</details>';
+        }
+      }
     }
 
     var takeBlock = clean(c.advait_quick_take)
@@ -1501,9 +1551,7 @@
   }
 
   function cardValue(c){
-    var p = num(c.welcome_offer);
-    var k = parseFloat(c.cpp);
-    return (p != null && !isNaN(k)) ? p * k / 100 : 0;
+    return estimatedOfferValue(c);
   }
 
   function chip(label, clearFn){
@@ -1597,7 +1645,7 @@
       if (el.issuer.value && c.card_issuer !== el.issuer.value) return false;
       if (el.type.value && c.card_type !== el.type.value) return false;
       if (!feeMatch(num(c.annual_fee), el.fee.value)) return false;
-      if (el.wo.value && !(num(c.welcome_offer) >= parseFloat(el.wo.value))) return false;
+      if (el.wo.value && !(offerPointsEquivalent(c) >= parseFloat(el.wo.value))) return false;
       if (el.spend.value && !(num(c.bonus_condition) != null && num(c.bonus_condition) <= parseFloat(el.spend.value))) return false;
       if (el.transfer.checked && !normalizeBool(c.transferable)) return false;
       if (el.elev.checked && !isElevated(c)) return false;
@@ -1606,7 +1654,7 @@
     });
 
     var srt = el.sort.value;
-    if (srt === "wo") list.sort(function(a,b){ return (num(b.welcome_offer) || 0) - (num(a.welcome_offer) || 0); });
+    if (srt === "wo") list.sort(function(a,b){ return offerPointsEquivalent(b) - offerPointsEquivalent(a); });
     else if (srt === "val") list.sort(function(a,b){ return cardValue(b) - cardValue(a); });
     else if (srt === "feelo") list.sort(function(a,b){ return (num(a.annual_fee) || 0) - (num(b.annual_fee) || 0); });
     else if (srt === "feehi") list.sort(function(a,b){ return (num(b.annual_fee) || 0) - (num(a.annual_fee) || 0); });
