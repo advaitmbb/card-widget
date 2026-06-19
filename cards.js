@@ -2,7 +2,7 @@
    Miles Beyond Borders — Card Page Widget
    Showit embed:
    <div id="mbb-cards"></div>
-   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=10"></script>
+   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=11"></script>
 
    v8:
    - Mobile-first card layout
@@ -14,7 +14,7 @@
 (function () {
   "use strict";
 
-  var VERSION = "10";
+  var VERSION = "11";
   var DATA_URL = "https://advaitmbb.github.io/card-widget/cards.json?v=" + VERSION;
 
   var LINK_PILLS = {
@@ -645,6 +645,136 @@
   }
 }
 
+
+
+/* v11 mobile filter overflow fix
+   Make the sheet compact, independently scrollable, and keep Apply visible.
+   Desktop unchanged.
+*/
+@media(max-width:680px){
+  #mbb-cards .mbbc-panel{
+    height:100dvh !important;
+    max-height:100dvh !important;
+    padding:calc(8px + env(safe-area-inset-top)) 9px calc(8px + env(safe-area-inset-bottom)) !important;
+    display:flex !important;
+    flex-direction:column !important;
+    overflow:hidden !important;
+  }
+
+  #mbb-cards .mbbc-panel-head{
+    flex:0 0 auto !important;
+    margin:0 0 6px !important;
+    padding:0 0 6px !important;
+  }
+
+  #mbb-cards .mbbc-panel-title{
+    font-size:12px !important;
+  }
+
+  #mbb-cards .mbbc-close{
+    width:28px !important;
+    height:28px !important;
+    font-size:18px !important;
+  }
+
+  #mbb-cards .mbbc-panel-body{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior:contain !important;
+    display:grid !important;
+    grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+    align-content:start !important;
+    row-gap:5px !important;
+    column-gap:6px !important;
+    padding:0 0 8px !important;
+  }
+
+  #mbb-cards .mbbc-panel .mbbc-row2,
+  #mbb-cards .mbbc-panel .mbbc-row3{
+    display:contents !important;
+    margin:0 !important;
+    padding:0 !important;
+    gap:0 !important;
+  }
+
+  #mbb-cards .mbbc-panel #mbbc-sort{
+    grid-column:1 / -1 !important;
+  }
+
+  #mbb-cards .mbbc-panel #mbbc-spend{
+    grid-column:auto !important;
+  }
+
+  #mbb-cards .mbbc-panel select{
+    min-height:30px !important;
+    height:30px !important;
+    padding:5px 24px 5px 9px !important;
+    border-radius:999px !important;
+    font-size:9.2px !important;
+    line-height:1 !important;
+    font-weight:800 !important;
+    white-space:nowrap !important;
+    text-overflow:ellipsis !important;
+    background-position:calc(100% - 13px) 13px, calc(100% - 9px) 13px !important;
+    background-size:4px 4px,4px 4px !important;
+  }
+
+  #mbb-cards .mbbc-panel .mbbc-toggle{
+    min-height:30px !important;
+    height:30px !important;
+    padding:5px 8px !important;
+    border-radius:999px !important;
+    font-size:9.2px !important;
+    line-height:1.05 !important;
+    font-weight:850 !important;
+    gap:5px !important;
+    overflow:hidden !important;
+  }
+
+  #mbb-cards .mbbc-panel .mbbc-toggle input{
+    width:12px !important;
+    height:12px !important;
+    min-width:12px !important;
+    margin:0 !important;
+  }
+
+  #mbb-cards .mbbc-apply{
+    flex:0 0 auto !important;
+    display:block !important;
+    position:relative !important;
+    bottom:auto !important;
+    margin:6px 0 0 !important;
+    min-height:38px !important;
+    height:38px !important;
+    border-radius:999px !important;
+    font-size:12px !important;
+  }
+}
+
+@media(max-width:380px){
+  #mbb-cards .mbbc-panel-body{
+    row-gap:4px !important;
+    column-gap:5px !important;
+  }
+
+  #mbb-cards .mbbc-panel select,
+  #mbb-cards .mbbc-panel .mbbc-toggle{
+    min-height:28px !important;
+    height:28px !important;
+    font-size:8.8px !important;
+    padding-top:4px !important;
+    padding-bottom:4px !important;
+  }
+
+  #mbb-cards .mbbc-apply{
+    min-height:36px !important;
+    height:36px !important;
+  }
+}
+
 `;
 
   var st = document.createElement("style");
@@ -1160,6 +1290,17 @@
 
     if (el.panel) {
       el.panel.addEventListener("touchmove", function(e){
+        if (!mount.classList.contains("mbbc-panel-open")) return;
+        e.stopPropagation();
+      }, { passive:true });
+    }
+
+    if (el.panelBody) {
+      el.panelBody.addEventListener("touchmove", function(e){
+        if (!mount.classList.contains("mbbc-panel-open")) return;
+        e.stopPropagation();
+      }, { passive:true });
+      el.panelBody.addEventListener("wheel", function(e){
         if (!mount.classList.contains("mbbc-panel-open")) return;
         e.stopPropagation();
       }, { passive:true });
