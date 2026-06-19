@@ -2,7 +2,7 @@
    Miles Beyond Borders — Card Page Widget
    Showit embed:
    <div id="mbb-cards"></div>
-   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=13"></script>
+   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=14"></script>
 
    v8:
    - Mobile-first card layout
@@ -14,7 +14,7 @@
 (function () {
   "use strict";
 
-  var VERSION = "13";
+  var VERSION = "14";
   var DATA_URL = "https://advaitmbb.github.io/card-widget/cards.json?v=" + VERSION;
 
   var LINK_PILLS = {
@@ -1031,6 +1031,182 @@
     height:36px !important;
     min-height:36px !important;
     font-size:11.5px !important;
+  }
+}
+
+
+
+/* v14 mobile filter placement fix
+   Top-positioned compact sheet; Reset + Apply remain visible.
+   Desktop unchanged.
+*/
+@media(max-width:680px){
+  #mbb-cards .mbbc-panel{
+    top:calc(10px + env(safe-area-inset-top)) !important;
+    left:8px !important;
+    right:8px !important;
+    bottom:auto !important;
+    width:auto !important;
+    height:auto !important;
+    min-height:auto !important;
+    max-height:none !important;
+    border-radius:20px !important;
+    padding:9px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    overflow:visible !important;
+    transform:translateY(-115%) !important;
+  }
+
+  #mbb-cards.mbbc-panel-open .mbbc-panel{
+    transform:translateY(0) !important;
+  }
+
+  #mbb-cards .mbbc-panel-head{
+    flex:0 0 auto !important;
+    margin:0 0 6px !important;
+    padding:0 0 6px !important;
+    border-bottom:1px solid var(--line) !important;
+  }
+
+  #mbb-cards .mbbc-panel-title{
+    font-size:12.5px !important;
+    line-height:1.1 !important;
+  }
+
+  #mbb-cards .mbbc-close{
+    width:28px !important;
+    height:28px !important;
+    font-size:18px !important;
+  }
+
+  #mbb-cards .mbbc-panel-body{
+    flex:0 0 auto !important;
+    min-height:auto !important;
+    max-height:none !important;
+    height:auto !important;
+    overflow:visible !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    align-content:start !important;
+    row-gap:4px !important;
+    column-gap:5px !important;
+    padding:0 !important;
+  }
+
+  #mbb-cards .mbbc-panel .mbbc-row2,
+  #mbb-cards .mbbc-panel .mbbc-row3{
+    display:contents !important;
+    margin:0 !important;
+    padding:0 !important;
+    gap:0 !important;
+  }
+
+  #mbb-cards .mbbc-panel #mbbc-sort{
+    grid-column:1 / -1 !important;
+  }
+
+  #mbb-cards .mbbc-panel select{
+    min-height:27px !important;
+    height:27px !important;
+    padding:4px 22px 4px 8px !important;
+    border-radius:999px !important;
+    font-size:8.8px !important;
+    line-height:1 !important;
+    font-weight:800 !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    background-position:calc(100% - 12px) 12px, calc(100% - 8px) 12px !important;
+    background-size:4px 4px,4px 4px !important;
+  }
+
+  #mbb-cards .mbbc-panel .mbbc-toggle{
+    min-height:27px !important;
+    height:27px !important;
+    padding:4px 7px !important;
+    border-radius:999px !important;
+    font-size:8.8px !important;
+    line-height:1 !important;
+    font-weight:850 !important;
+    gap:4px !important;
+    overflow:hidden !important;
+    white-space:nowrap !important;
+    text-overflow:ellipsis !important;
+  }
+
+  #mbb-cards .mbbc-panel .mbbc-toggle input{
+    width:11px !important;
+    height:11px !important;
+    min-width:11px !important;
+    margin:0 !important;
+  }
+
+  #mbb-cards .mbbc-panel-actions{
+    flex:0 0 auto !important;
+    display:grid !important;
+    grid-template-columns:0.8fr 1.2fr !important;
+    gap:7px !important;
+    padding:7px 0 0 !important;
+    margin:7px 0 0 !important;
+    border-top:1px solid var(--line) !important;
+    background:#fff !important;
+  }
+
+  #mbb-cards .mbbc-panel-reset,
+  #mbb-cards .mbbc-apply{
+    display:block !important;
+    width:100% !important;
+    height:34px !important;
+    min-height:34px !important;
+    border-radius:999px !important;
+    font-size:11.5px !important;
+    font-weight:900 !important;
+    line-height:1 !important;
+    margin:0 !important;
+    position:relative !important;
+    bottom:auto !important;
+    cursor:pointer !important;
+  }
+
+  #mbb-cards .mbbc-panel-reset{
+    background:#F7F2EA !important;
+    color:var(--ink) !important;
+    border:1px solid var(--line) !important;
+  }
+
+  #mbb-cards .mbbc-apply{
+    background:var(--accent) !important;
+    color:#fff !important;
+    border:1px solid var(--accent) !important;
+  }
+}
+
+@media(max-width:360px){
+  #mbb-cards .mbbc-panel{
+    left:6px !important;
+    right:6px !important;
+    top:calc(8px + env(safe-area-inset-top)) !important;
+    padding:7px !important;
+  }
+
+  #mbb-cards .mbbc-panel-body{
+    row-gap:3px !important;
+    column-gap:4px !important;
+  }
+
+  #mbb-cards .mbbc-panel select,
+  #mbb-cards .mbbc-panel .mbbc-toggle{
+    min-height:25px !important;
+    height:25px !important;
+    font-size:8.2px !important;
+  }
+
+  #mbb-cards .mbbc-panel-reset,
+  #mbb-cards .mbbc-apply{
+    height:32px !important;
+    min-height:32px !important;
+    font-size:11px !important;
   }
 }
 
