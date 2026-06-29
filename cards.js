@@ -2,7 +2,7 @@
    Miles Beyond Borders — Card Page Widget
    Showit embed:
    <div id="mbb-cards"></div>
-   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=15"></script>
+   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=16"></script>
 
    v8:
    - Mobile-first card layout
@@ -14,7 +14,7 @@
 (function () {
   "use strict";
 
-  var VERSION = "15";
+  var VERSION = "16";
   var DATA_URL = "https://advaitmbb.github.io/card-widget/cards.json?v=" + VERSION;
 
   var LINK_PILLS = {
@@ -23,14 +23,11 @@
     public: { label: "Public offer · no commission", cls: "pub" }
   };
 
-  var mount = document.getElementById("mbb-cards");
-  if (!mount) {
-    mount = document.createElement("div");
-    mount.id = "mbb-cards";
-    var here = document.currentScript;
-    if (here && here.parentNode) here.parentNode.insertBefore(mount, here.nextSibling);
-    else document.body.appendChild(mount);
-  }
+  var pageMount = document.getElementById("mbb-cards");
+  var singleMounts = Array.prototype.slice.call(document.querySelectorAll("[data-mbb-card]"));
+  if (!pageMount && !singleMounts.length) return;
+
+  var mount = pageMount || document.createElement("div");
 
   if (!document.getElementById("mbbc-fonts")) {
     var fl = document.createElement("link");
@@ -1210,13 +1207,20 @@
   }
 }
 
+
+/* v16 individual card container support */
+.mbb-card-widget{display:block;width:100%;box-sizing:border-box}
+.mbb-card-widget .mbbc-wrap{max-width:100%;padding:0}
+.mbb-card-widget .mbbc-single-grid{display:grid;grid-template-columns:1fr;gap:0;padding:0}
+.mbb-card-widget .mbbc-card{width:100%;max-width:100%}
+.mbb-card-widget .mbbc-card:hover{transform:none}
 `;
 
   var st = document.createElement("style");
-  st.textContent = CSS;
+  st.textContent = CSS + "\n" + CSS.replace(/#mbb-cards/g, ".mbb-card-widget");
   document.head.appendChild(st);
 
-  mount.innerHTML = `
+  if (pageMount) mount.innerHTML = `
     <div class="mbbc-wrap">
       <div class="mbbc-controls">
         <div class="mbbc-row mbbc-row1">
@@ -1417,7 +1421,7 @@
 
   function isElevated(c){
     var s = lc(c.welcome_offer_status);
-    return s === "elevated" || s === "all-time high" || s === "all time high";
+    return s === "elevated" || s === "all-time high" || s === "all time high" || s === "alltimehigh";
   }
 
   function linkType(c){
@@ -1440,7 +1444,7 @@
   function cardHTML(c){
     var status = lc(c.welcome_offer_status);
     var badges = "";
-    if (status === "all-time high" || status === "all time high") {
+    if (status === "all-time high" || status === "all time high" || status === "alltimehigh") {
       badges += '<span class="mbbc-badge high">All-time high</span>';
     } else if (status === "elevated") {
       badges += '<span class="mbbc-badge elev">Elevated</span>';
@@ -1577,8 +1581,9 @@
     el.filterCount.textContent = "(" + chips.length + ")";
   }
 
-  function initAccordions(){
-    var detailsList = Array.prototype.slice.call(mount.querySelectorAll(".mbbc-acc"));
+  function initAccordions(root){
+    root = root || mount;
+    var detailsList = Array.prototype.slice.call(root.querySelectorAll(".mbbc-acc"));
     detailsList.forEach(function(details){
       if (details.dataset.smoothReady === "yes") return;
       details.dataset.smoothReady = "yes";
@@ -1636,6 +1641,27 @@
           }, 285);
         }
       });
+    });
+  }
+
+
+  function renderSingles(allCards){
+    if (!singleMounts.length) return;
+    var byId = {};
+    allCards.forEach(function(c){
+      if (clean(c.card_id)) byId[clean(c.card_id)] = c;
+    });
+
+    singleMounts.forEach(function(node){
+      var id = clean(node.getAttribute("data-mbb-card"));
+      var c = byId[id];
+      node.classList.add("mbb-card-widget", "mbbc-single");
+      if (!c) {
+        node.innerHTML = '<div class="mbbc-state">Card details could not be loaded.</div>';
+        return;
+      }
+      node.innerHTML = '<div class="mbbc-wrap"><div class="mbbc-grid mbbc-single-grid">' + cardHTML(c) + '</div></div>';
+      initAccordions(node);
     });
   }
 
@@ -1815,16 +1841,27 @@
         CARDS = Object.keys(obj || {}).map(function(k){ return obj[k]; });
       }
 
-      CARDS = CARDS.filter(function(c){
+      var ALL_CARDS = CARDS.slice();
+      renderSingles(ALL_CARDS);
+
+      CARDS = ALL_CARDS.filter(function(c){
         return lc(c.show_on_card_page) === "yes";
       });
 
-      wire();
-      buildIssuerOptions();
-      render();
+      if (pageMount) {
+        wire();
+        buildIssuerOptions();
+        render();
+      }
     })
     .catch(function(){
-      var g = mount.querySelector("#mbbc-grid");
-      if (g) g.innerHTML = '<div class="mbbc-state">Couldn’t load cards right now. Please refresh in a moment.</div>';
+      if (pageMount) {
+        var g = mount.querySelector("#mbbc-grid");
+        if (g) g.innerHTML = '<div class="mbbc-state">Couldn’t load cards right now. Please refresh in a moment.</div>';
+      }
+      singleMounts.forEach(function(node){
+        node.classList.add("mbb-card-widget");
+        node.innerHTML = '<div class="mbbc-state">Couldn’t load card details right now. Please refresh in a moment.</div>';
+      });
     });
 })();
