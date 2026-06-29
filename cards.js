@@ -2,7 +2,7 @@
    Miles Beyond Borders — Card Page Widget
    Showit embed:
    <div id="mbb-cards"></div>
-   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=16"></script>
+   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=17"></script>
 
    v8:
    - Mobile-first card layout
@@ -14,7 +14,8 @@
 (function () {
   "use strict";
 
-  var VERSION = "16";
+  function bootMbbCardsWidget() {
+  var VERSION = "17";
   var DATA_URL = "https://advaitmbb.github.io/card-widget/cards.json?v=" + VERSION;
 
   var LINK_PILLS = {
@@ -1864,4 +1865,11 @@
         node.innerHTML = '<div class="mbbc-state">Couldn’t load card details right now. Please refresh in a moment.</div>';
       });
     });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bootMbbCardsWidget);
+  } else {
+    bootMbbCardsWidget();
+  }
 })();
