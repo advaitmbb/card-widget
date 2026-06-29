@@ -2,7 +2,7 @@
    Miles Beyond Borders — Card Page Widget
    Showit embed:
    <div id="mbb-cards"></div>
-   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=17"></script>
+   <script src="https://advaitmbb.github.io/card-widget/cards.js?v=18"></script>
 
    v8:
    - Mobile-first card layout
@@ -15,7 +15,7 @@
   "use strict";
 
   function bootMbbCardsWidget() {
-  var VERSION = "17";
+  var VERSION = "18";
   var DATA_URL = "https://advaitmbb.github.io/card-widget/cards.json?v=" + VERSION;
 
   var LINK_PILLS = {
@@ -1215,6 +1215,20 @@
 .mbb-card-widget .mbbc-single-grid{display:grid;grid-template-columns:1fr;gap:0;padding:0}
 .mbb-card-widget .mbbc-card{width:100%;max-width:100%}
 .mbb-card-widget .mbbc-card:hover{transform:none}
+
+
+/* v18 individual widget CTA styling */
+.mbb-card-widget .mbbc-cta{
+  background:#1A2B3C !important;
+  color:#FAF6EE !important;
+  box-shadow:0 8px 18px rgba(26,43,60,.18) !important;
+}
+
+.mbb-card-widget .mbbc-cta:hover{
+  background:#132232 !important;
+  color:#FAF6EE !important;
+}
+
 `;
 
   var st = document.createElement("style");
@@ -1442,7 +1456,8 @@
     return '<svg class="mbbc-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   }
 
-  function cardHTML(c){
+  function cardHTML(c, opts){
+    opts = opts || {};
     var status = lc(c.welcome_offer_status);
     var badges = "";
     if (status === "all-time high" || status === "all time high" || status === "alltimehigh") {
@@ -1482,6 +1497,8 @@
       }
     }
 
+    if (opts.hideValue) valueBlock = "";
+
     var takeBlock = clean(c.advait_quick_take)
       ? '<details class="mbbc-acc">' +
           '<summary class="mbbc-acc-sum"><span class="mbbc-acc-lab take">✦ My take</span>' + chevron() + '</summary>' +
@@ -1513,7 +1530,7 @@
     var reviewUrl = getReviewUrl(c);
     var review = reviewUrl ? '<a class="mbbc-review" href="' + esc(reviewUrl) + '">Full review</a>' : "";
     var offer = offerUrl
-      ? '<a class="mbbc-cta" href="' + esc(offerUrl) + '" target="_blank" rel="' + relAttr + '">View offer →</a>'
+      ? '<a class="mbbc-cta" href="' + esc(offerUrl) + '" target="_blank" rel="' + relAttr + '">' + esc(opts.ctaText || "View offer →") + '</a>'
       : '<span class="mbbc-cta" aria-disabled="true">Offer unavailable</span>';
 
     return '' +
@@ -1661,7 +1678,7 @@
         node.innerHTML = '<div class="mbbc-state">Card details could not be loaded.</div>';
         return;
       }
-      node.innerHTML = '<div class="mbbc-wrap"><div class="mbbc-grid mbbc-single-grid">' + cardHTML(c) + '</div></div>';
+      node.innerHTML = '<div class="mbbc-wrap"><div class="mbbc-grid mbbc-single-grid">' + cardHTML(c, { hideValue:true, ctaText:"Learn more" }) + '</div></div>';
       initAccordions(node);
     });
   }
