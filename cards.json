@@ -247,11 +247,11 @@
 "advait_quick_take": "A must have for Alaska and Hawaiian Frequent flyers packed with benefits to elevate your travel",
 "link": "<div data-mbb-card=\"Ascent\"></div>",
 "show_on_card_page": "no",
-"sort_order": "",
+"sort_order": "8",
 "card_type": "Personal",
-"cpp": "",
+"cpp": "1.6",
 "transferable": "no",
-"link_type": "",
+"link_type": "public offer",
 "review_url": ""
 },
 "Summit": {
@@ -270,11 +270,11 @@
 "advait_quick_take": "my workhorse card for spend outside the US earning me 3x points and getting me closer to the 100,000 certificate",
 "link": "<div data-mbb-card=\"Summit\"></div>",
 "show_on_card_page": "no",
-"sort_order": "",
+"sort_order": "9",
 "card_type": "Personal",
-"cpp": "",
+"cpp": "1.6",
 "transferable": "no",
-"link_type": "",
+"link_type": "public offer",
 "review_url": ""
 }
 }
